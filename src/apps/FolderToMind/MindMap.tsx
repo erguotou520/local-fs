@@ -1,7 +1,4 @@
-import { useEffect, useRef } from 'react'
-import G6 from '@antv/g6'
-
-const { Util } = G6
+import { useRef } from 'react'
 
 export interface MindMapNode {
   name: string
@@ -14,7 +11,7 @@ export interface MindMapProps {
 }
 
 const Node = ({ node }: { node: MindMapNode }) => {
-  return ( 
+  return (
    <div>
      <div>{node.name}</div>
       {node.children && node.children.map(child => <div key={node.name} className='pl-4'><Node node={child} /></div>)}
