@@ -22,7 +22,7 @@ async function getDirectoryStructure(handler: FileSystemHandle, deep = 0): Promi
       type: 'folder',
       children: []
     }
-    for await (const file of handler.values()) {
+    for await (const file of (handler as FileSystemDirectoryHandle).values()) {
       const child = await getDirectoryStructure(file, deep + 1)
       if (child) {
         ret.children!.push(child)
