@@ -1,7 +1,5 @@
 import { useEffect, useRef } from 'react'
-import G6 from '@antv/g6'
-
-const { Util } = G6
+import { Markmap } from 'markmap-view'
 
 export interface MindMapNode {
   name: string
@@ -13,21 +11,25 @@ export interface MindMapProps {
   treeNodes: MindMapNode[]
 }
 
-const Node = ({ node }: { node: MindMapNode }) => {
-  return ( 
-   <div>
-     <div>{node.name}</div>
-      {node.children && node.children.map(child => <div key={node.name} className='pl-4'><Node node={child} /></div>)}
-   </div>
-  )
+type INode = NonNullable<Parameters<typeof Markmap.create>[2]>
+
+function dataConvert(treeNode: MindMapNode, deep: number): INode {
+  return {
+    d: deep,
+    t: treeNode.type,
+    v: treeNode.name,
+    c: treeNode.children ? treeNode.children.map(child => dataConvert(child, deep + 1)) : [],
+  }
 }
 
 const MindMap = ({ treeNodes }: MindMapProps) => {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<SVGSVGElement>(null)
 
-  return <div ref={containerRef}>
-    {treeNodes.map(node => <Node key={node.name} node={node} />)}
-  </div>
+  useEffect(() => {
+    Markmap.create(containerRef.current!, {}, dataConvert(treeNodes[0], 0))
+  }, [])
+
+  return <svg ref={containerRef} className="h-full w-full" />
 }
 
 export default MindMap
