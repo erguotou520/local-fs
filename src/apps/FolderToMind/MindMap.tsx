@@ -24,10 +24,17 @@ function dataConvert(treeNode: MindMapNode, deep: number): INode {
 
 const MindMap = ({ treeNodes }: MindMapProps) => {
   const containerRef = useRef<SVGSVGElement>(null)
+  const markmapRef = useRef<Markmap>()
 
   useEffect(() => {
-    Markmap.create(containerRef.current!, {}, dataConvert(treeNodes[0], 0))
-  }, [])
+    if (!markmapRef.current) {
+      const map = Markmap.create(containerRef.current!, {}, dataConvert(treeNodes[0], 0))
+      markmapRef.current = map
+    } else {
+      markmapRef.current!.setData(dataConvert(treeNodes[0], 0))
+      markmapRef.current!.fit()
+    }
+  }, [treeNodes])
 
   return <svg ref={containerRef} className="h-full w-full" />
 }
